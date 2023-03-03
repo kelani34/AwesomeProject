@@ -3,10 +3,10 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 const ColorPreview = ({ color }) => {
   return (
     <>
-      <Text style={style.text}>{color.name}</Text>
+      <Text style={style.text}>{color.paletteName}</Text>
       <FlatList
-        data={color.color.slice(0, 5)}
-        keyExtractor={({ items }) => items}
+        data={color.colors.slice(0, 5)}
+        keyExtractor={({ id }) => id}
         renderItem={({ item }) => (
           <View style={[style.box, { backgroundColor: item.hexCode }]} />
         )}

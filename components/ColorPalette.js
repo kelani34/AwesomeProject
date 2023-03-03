@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import ColorBox from './ColorBox';
 
-const ColorPallete = ({ route, navigation }) => {
-  const { colors, palleteName } = route.params;
+const ColorPalette = ({ route }) => {
+  const { colors, paletteName } = route.params;
   return (
     <FlatList
       data={colors}
@@ -15,12 +15,12 @@ const ColorPallete = ({ route, navigation }) => {
           text={`${item.colorName} : ${item.hexCode}`}
         />
       )}
-      ListHeaderComponent={<Text style={styles.header}>{palleteName}</Text>}
+      ListHeaderComponent={<Text style={styles.header}>{paletteName}</Text>}
     />
   );
 };
 
-export default ColorPallete;
+export default ColorPalette;
 
 const styles = StyleSheet.create({
   flex: 1,
