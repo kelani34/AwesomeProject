@@ -1,9 +1,17 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  RefreshControl,
+  Text,
+} from 'react-native';
 import ColorPreview from './ColorPreview';
 
 const Home = ({ navigation }) => {
   const [colors, setColors] = useState([]);
+  const [loading, setLoading] = useState(false);
   const handleColors = useCallback(async () => {
     const result = await fetch(
       'https://color-palette-api.kadikraman.now.sh/palettes',
@@ -19,27 +27,59 @@ const Home = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleLoading = useCallback(async () => {
+    setLoading(true);
+    await handleColors();
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function addColor(newColor) {
+    setColors([newColor, ...colors]);
+  }
+
   return (
-    <View style={style.container}>
-      <FlatList
-        data={colors}
-        keyExtractor={(item, index) => index}
-        renderItem={({ item }) => {
-          return (
+    <>
+      <View style={style.container}>
+        <FlatList
+          data={colors}
+          keyExtractor={(item, index) => index}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('ColorPallete', {
+                    paletteName: item.paletteName,
+                    colors: item.colors,
+                  });
+                }}
+              >
+                <ColorPreview color={item} />
+              </TouchableOpacity>
+            );
+          }}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={handleLoading} />
+          }
+          ListHeaderComponent={
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('ColorPallete', {
-                  paletteName: item.paletteName,
-                  colors: item.colors,
+                navigation.navigate('ColorModal', {
+                  modalName: 'Add a color scheme',
+                  updateColor: addColor,
                 });
               }}
             >
-              <ColorPreview color={item} />
+              <View style={style.modal}>
+                <Text style={style.modalText}>Add a color scheme</Text>
+              </View>
             </TouchableOpacity>
-          );
-        }}
-      />
-    </View>
+          }
+        />
+      </View>
+    </>
   );
 };
 
@@ -60,5 +100,13 @@ const style = StyleSheet.create({
     backgroundColor: 'blue',
     marginRight: 10,
     marginBottom: 25,
+  },
+  modal: {
+    marginBottom: 20,
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#69D2E7',
   },
 });
